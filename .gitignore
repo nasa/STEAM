@@ -1,0 +1,11 @@
+*.pyc
+docs/build
+*.log
+.*.swp
+
+### C++ stuff that we don't want to save
+*.o
+*.so
+*_wrap.cxx
+#   Link to the mpi4py directory
+mpi4py
