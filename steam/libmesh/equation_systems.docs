@@ -1,0 +1,24 @@
+%feature("autodoc", "0");
+%define DOCSTRING1
+" Populate and equaton system with variable from python.
+
+ Args:
+      system(ExplicitSystem*): System pointer to add varible to.
+      name(string)           : Name of variable to add.
+      val(double vector)     : Node-based values to populate.
+
+"
+%enddef
+%feature("docstring", DOCSTRING1) fill_system_variable;
+%define DOCSTRING2
+" Convert node-based data to element-based data.
+
+ Args:
+      system(ExplicitSystem*): Node    system pointer.
+      system(ExplicitSystem*): Element system pointer.
+      name(string)           : Name of element-based variable to make.
+
+
+"
+%enddef
+%feature("docstring", DOCSTRING2) node_to_element;

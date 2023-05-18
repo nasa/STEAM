@@ -1,0 +1,9 @@
+_*.so
+*.o
+*.cxx
+init.py
+mesh.py
+equation_systems.py
+system.py
+mpi.py
+*~

@@ -1,0 +1,6 @@
+*_wrap*
+*.o
+*.so
+modified_newtonian.py
+locate_stagnation_point.py
+streamlines.py

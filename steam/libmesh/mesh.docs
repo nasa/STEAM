@@ -1,0 +1,49 @@
+%feature("autodoc", "0");
+%define DOCSTRING1
+" Projects source grid onto target grid and returns result.
+
+ Args:
+     source (:obj:`_Mesh`,pointer): _Mesh pointer to what will be projected.
+      target (:obj:`_Mesh`,pointer): _Mesh pointer to the projection target.
+
+ Returns:
+    :obj:`_Mesh`,pointer: _Mesh pointer to a projected copy of source.
+
+ 
+"
+%enddef
+%feature("docstring", DOCSTRING1) project_grid;
+%define DOCSTRING2
+" Read grid from disk and return data to Python.
+
+ Args:
+     init (:obj:`libMesh`,pointer): is pointer to libMesh instance.
+     filename (:obj:`string`,input): mesh filename to be read
+     x (:obj:`list`,output): list of floats containing x-coordinate for each node
+     y (:obj:`list`,output): list of floats containing y-coordinate for each node
+     z (:obj:`list`,output): list of floats containing z-coordinate for each node
+     elems (:obj:`list`,output): list of integers containing 3 node numbers for right-handed triangle element plus a 4th integer for component id.  List will be 4*(Number of Elements) long.
+  
+"
+%enddef
+%feature("docstring", DOCSTRING2) read_mesh_and_get_data;
+%define DOCSTRING3
+" Uniformly refine a mesh.
+
+ This just wraps the libMesh method.
+
+ Args:
+    num_times (int) The number of times to refine each element.
+
+"
+%enddef
+%feature("docstring", DOCSTRING3) _Mesh::uniformly_refine;
+%define DOCSTRING4
+" Check to ensure centroids are populated.
+
+ Returns:
+   (boolean) If the element centroids are defined.
+
+"
+%enddef
+%feature("docstring", DOCSTRING4) _Mesh::elem_centroid_is_populated;

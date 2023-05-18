@@ -1,0 +1,20 @@
+%feature("autodoc", "0");
+%define DOCSTRING1
+" Get data for translation of a libMesh solution into Python.
+
+ Args:
+      system(ExplicitSystem*): System pointer to add varible to.
+      name(string)           : Name of variable to add.
+      val(double vector)     : Node-based values to populate.
+
+"
+%enddef
+%feature("docstring", DOCSTRING1) get_data_by_name;
+%define DOCSTRING2
+"Get data for translation of a libMesh solution into Python.
+
+Retrieve the system by number.
+
+"
+%enddef
+%feature("docstring", DOCSTRING2) get_data_by_num;
