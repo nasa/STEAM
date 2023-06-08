@@ -63,3 +63,60 @@ repository to expedite the process of creating the proper environment.
 Users in the FSL can further leverage the FSL's module system with the provided
 STEAM module for easily establishing the proper versions of Anaconda, MPI, and
 other executables.
+
+# Getting Started
+### The Python Environment
+After cloning this repository, one must build an appropriate Python 3.10
+environment.  The implicit assumption in this and all documentation is that
+one will use some version of 
+[Anaconda](https://docs.conda.io/en/latest/miniconda.html)
+to manage their environments.  Once `conda` is installed and in your path,
+use the provided `py310.yml` file to build your environment.
+
+```bash
+$ cd /PATH/TO/STEAM/utils
+$ conda env create -f py310.yml
+```
+
+This will create an environment called `pysteam310`. All STEAM code should be 
+run with this environment (or a derivative of this environment) active.
+Further, in order to 
+access STEAM code from any location on your file system, you should append
+the STEAM repository to your `PYTHONPATH` environment variable.
+
+```bash
+$ conda activate pysteam310
+export PYTHONPATH="$PYTHONPATH:/PATH/TO/STEAM"
+```
+
+### Running the Test Suite 
+Once in the correct environment and with the PYTHONPATH set, one should run 
+the test suite.  
+
+```bash
+$ cd /PATH/TO/STEAM/tests
+$ ./run_all.sh
+```
+
+All tests should pass, though if you're reading this and that's not the case, 
+I understand that you'll be frustrated and this sentence will provide little
+solace or assistance.
+Assuming that the tests _do_ pass, you're now ready to begin using STEAM in
+your own code.
+
+### Building the Documentation 
+The documentation should help you to use STEAM's many capabilities.  Build it
+in the `docs` directory.
+
+```bash
+$ cd /PATH/TO/STEAM/docs
+$ make
+```
+
+This will assemble many HTML pages from the docstrings in the source code and
+place them in the `build/html` directory.
+To look at the documentation, open any page in your browser of choice.
+
+```bash
+$ firefox build/html/index.html
+```
