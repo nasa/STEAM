@@ -86,7 +86,7 @@ the STEAM repository to your `PYTHONPATH` environment variable.
 
 ```bash
 $ conda activate pysteam310
-export PYTHONPATH="$PYTHONPATH:/PATH/TO/STEAM"
+$ export PYTHONPATH="$PYTHONPATH:/PATH/TO/STEAM"
 ```
 
 ### Running the Test Suite 
