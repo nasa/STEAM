@@ -8,7 +8,7 @@ import steam
 import os
 from code import interact
 
-@ut.skip( 'Not implemented yet' )
+#@ut.skip( 'Not implemented yet' )
 class TestModels( ut.TestCase ):
 
     @classmethod
@@ -16,48 +16,121 @@ class TestModels( ut.TestCase ):
         #self.mesh.write_tri_ascii( 'cube' )
         cls.remove_files = []
 
-        ### Initialize LibMesh
-        steam.libmesh.Init()
-
     def setUp( self ):
-        """Create a 5x5x5 cube mesh with two uniform solution variables.
+        """Create a mesh and several solutions with which to test
         """
 
         ### Create a cube and populate it with uniform solutions
         self.mesh = steam.mesh.mk_cube( 1, 5, file = 0 )
-        self.node_soln = steam.solution.uniform_soln( self.mesh, 
-                           node_elem_flag = 'NODE', values = ['rand','rand'] )
-        self.elem_soln = steam.solution.uniform_soln( self.mesh, 
-                           node_elem_flag = 'ELEM', values = ['rand','rand'] )
 
-        ### Define a dictionary of all node_ids and their associated points
-        self.node_dict = self.mesh.xyz_pt.to_dict( orient = 'index' )
-        self.node_ids = list( map( int, self.node_dict.keys() ) ) 
+        ### Two node-based and two elem-based solutions are needed for 
+        #   soln-by-soln modeling
+        self.node_solnA = steam.solution.uniform_soln( self.mesh, 
+                          node_elem_flag = 'NODE', values = [1.0,'rand'] )
+        self.node_solnB = steam.solution.uniform_soln( self.mesh, 
+                          node_elem_flag = 'NODE', values = [2.0,'rand'] )
+        self.elem_solnA = steam.solution.uniform_soln( self.mesh, 
+                          node_elem_flag = 'ELEM', values = [1.0,'rand'] )
+        self.elem_solnB = steam.solution.uniform_soln( self.mesh, 
+                          node_elem_flag = 'ELEM', values = [2.0,'rand'] )
 
-        ### Define lists of points with various qualities
-        self.x_gt0_nodes = list( map( int, [node for node in 
-                self.node_dict.keys() if self.node_dict[node]['X'] > 0] ) )
-        self.y_gte0_nodes = list( map( int, [node for node in 
-                self.node_dict.keys() if self.node_dict[node]['Y'] >= 0] ) )
+        ### Establish variables based on the mesh for testing later
+        for soln in (self.node_solnA, self.node_solnB):
+            soln.add_var( 'X', self.mesh.xyz_pt['X'] )
+            soln.add_var( 'Y', self.mesh.xyz_pt['Y'] )
+            soln.add_var( 'Z', self.mesh.xyz_pt['Z'] )
+        for soln in (self.elem_solnA, self.elem_solnB):
+            soln.add_var( 'X', self.mesh.xyz_el['X'] )
+            soln.add_var( 'Y', self.mesh.xyz_el['Y'] )
+            soln.add_var( 'Z', self.mesh.xyz_el['Z'] )
 
-        ### Construct the modeling solution
-        self.elem_model_soln = steam.solution.uniform_soln( self.mesh, 
-                       node_elem_flag = 'ELEM', values = [1.0, 1.0, 0.0] )
-        self.elem_model_soln.data.rename( columns = {'q1': 'repl', 
-                                          'q2': 'mult', 'q3': 'add' } )
-        steam.models.scalar_to_component( self.elem_model_soln, 1, 'repl',
-                                          self.replace_factor, method='repl' )
-
-        interact( local = dict( globals(), **locals() ) )
-
-    def test_Setup( self ):
-        """Confirm that the setUp method was run properly.
+    def test_Max( self ):
+        """Test the performance of soln_by_soln with operation="MAX"
         """
-    
-        out_file = 'initial_soln.plt'
 
-        self.assertEqual( len( self.x_gt0_nodes ), 41 )
-        self.assertEqual( len( self.y_gte0_nodes ), 57 )
+        ### Node-based solutions
+        #   Test on var='q1'
+        out_soln = steam.models.soln_by_soln( self.node_solnA, ['q1'], 
+                                self.node_solnB, ['q1'], operation = 'MAX')
+        self.assertTrue( all( out_soln.data['q1'] == 2 ) )
+        #   Test max of X and Y in mesh
+        self.assertTrue( all( self.node_solnA.data['X'] == 
+                              self.mesh.xyz_pt['X'] ) )
+        out_soln = steam.models.soln_by_soln( self.node_solnA, ['X'], 
+                                self.node_solnB, ['Y'], operation = 'MAX')
+        self.assertTrue( all( out_soln.data.X == 
+                         self.mesh.xyz_pt[['X','Y']].max(axis='columns') ) )
+        #   Test max of X and Z in mesh
+        self.assertTrue( all( self.node_solnA.data['X'] == 
+                              self.mesh.xyz_pt['X'] ) )
+        out_soln = steam.models.soln_by_soln( self.node_solnA, ['X'], 
+                                self.node_solnB, ['Z'], operation = 'MAX')
+        self.assertTrue( all( out_soln.data.X == 
+                         self.mesh.xyz_pt[['X','Z']].max(axis='columns') ) )
+
+        ### Element-based solutions
+        #   Test on var='q1'
+        out_soln = steam.models.soln_by_soln( self.elem_solnA, ['q1'], 
+                                self.elem_solnB, ['q1'], operation = 'MAX')
+        self.assertTrue( all( out_soln.data['q1'] == 2 ) )
+        #   Test max of X and Y in mesh
+        self.assertTrue( all( self.elem_solnA.data['X'] == 
+                              self.mesh.xyz_el['X'] ) )
+        out_soln = steam.models.soln_by_soln( self.elem_solnA, ['X'], 
+                                self.elem_solnB, ['Y'], operation = 'MAX')
+        self.assertTrue( all( out_soln.data.X == 
+                         self.mesh.xyz_el[['X','Y']].max(axis='columns') ) )
+        #   Test max of X and Z in mesh
+        self.assertTrue( all( self.elem_solnA.data['X'] == 
+                              self.mesh.xyz_el['X'] ) )
+        out_soln = steam.models.soln_by_soln( self.elem_solnA, ['X'], 
+                                self.elem_solnB, ['Z'], operation = 'MAX')
+        self.assertTrue( all( out_soln.data.X == 
+                         self.mesh.xyz_el[['X','Z']].max(axis='columns') ) )
+
+    def test_Min( self ):
+        """Test the performance of soln_by_soln with operation="MIN"
+        """
+
+        ### Node-based solutions
+        #   Test on var='q1'
+        out_soln = steam.models.soln_by_soln( self.node_solnA, ['q1'], 
+                                self.node_solnB, ['q1'], operation = 'MIN')
+        self.assertTrue( all( out_soln.data['q1'] == 1 ) )
+        #   Test min of X and Y in mesh
+        self.assertTrue( all( self.node_solnA.data['X'] == 
+                              self.mesh.xyz_pt['X'] ) )
+        out_soln = steam.models.soln_by_soln( self.node_solnA, ['X'], 
+                                self.node_solnB, ['Y'], operation = 'MIN')
+        self.assertTrue( all( out_soln.data.X == 
+                         self.mesh.xyz_pt[['X','Y']].min(axis='columns') ) )
+        #   Test min of X and Z in mesh
+        self.assertTrue( all( self.node_solnA.data['X'] == 
+                              self.mesh.xyz_pt['X'] ) )
+        out_soln = steam.models.soln_by_soln( self.node_solnA, ['X'], 
+                                self.node_solnB, ['Z'], operation = 'MIN')
+        self.assertTrue( all( out_soln.data.X == 
+                         self.mesh.xyz_pt[['X','Z']].min(axis='columns') ) )
+
+        ### Element-based solutions
+        #   Test on var='q1'
+        out_soln = steam.models.soln_by_soln( self.elem_solnA, ['q1'], 
+                                self.elem_solnB, ['q1'], operation = 'MIN')
+        self.assertTrue( all( out_soln.data['q1'] == 1 ) )
+        #   Test min of X and Y in mesh
+        self.assertTrue( all( self.elem_solnA.data['X'] == 
+                              self.mesh.xyz_el['X'] ) )
+        out_soln = steam.models.soln_by_soln( self.elem_solnA, ['X'], 
+                                self.elem_solnB, ['Y'], operation = 'MIN')
+        self.assertTrue( all( out_soln.data.X == 
+                         self.mesh.xyz_el[['X','Y']].min(axis='columns') ) )
+        #   Test min of X and Z in mesh
+        self.assertTrue( all( self.elem_solnA.data['X'] == 
+                              self.mesh.xyz_el['X'] ) )
+        out_soln = steam.models.soln_by_soln( self.elem_solnA, ['X'], 
+                                self.elem_solnB, ['Z'], operation = 'MIN')
+        self.assertTrue( all( out_soln.data.X == 
+                         self.mesh.xyz_el[['X','Z']].min(axis='columns') ) )
 
     @ut.skip( 'Not implemented yet' )
     def test_Replacement( self ):

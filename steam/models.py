@@ -12,6 +12,7 @@ logger.debug("Top of file")
 import pandas as pd
 import numpy  as np
 import steam.util
+#from code import interact
 
 ###############################################################
 
@@ -68,12 +69,6 @@ def scalar_to_component(soln,comp,var_to,scalar,method='repl'):
  
     return
 
-#sub = foo2.iloc[[1,3,5,7]]
-#combo = foo.iloc[sub.index] + sub
-#foo.update(combo['A'])
-#
-#foo[:] = 1
-
 ###############################################################
 
 def soln_by_soln( in_soln, soln_cols, model_soln, model_col,
@@ -128,7 +123,7 @@ def soln_by_soln( in_soln, soln_cols, model_soln, model_col,
     ### Get the data used to augment the in_soln at the appropriate indices
     af_data = model_soln.data[model_col].loc[model_index]
 
-    logger.debug('Augmenting solution by column:  {}'.format(af_data.name))
+    logger.debug('Augmenting solution by column:  {}'.format(model_col))
 
     ### Define the method of augmentation
     operation = operation.upper()
@@ -139,14 +134,17 @@ def soln_by_soln( in_soln, soln_cols, model_soln, model_col,
     elif operation == 'REPLACE':
         operator = lambda x,y: y
     elif operation == 'MAX':
-        operator = lambda x,y: max(x,y)
+        #operator = lambda x,y: max(x,y)
+        operator = lambda x,y: pd.concat([x, y], axis=1).max(axis=1)
     elif operation == 'MIN':
-        operator = lambda x,y: min(x,y)
+        #operator = lambda x,y: min(x,y)
+        operator = lambda x,y: pd.concat([x, y], axis=1).min(axis=1)
     else:
         raise ValueError('operation input must be "MULT", "ADD", or "REPLACE"')
 
     ### Augment the appropriate columns in the solution
     for col in soln_cols:
+#        interact( local = dict( globals(), **locals() ) )
         out_soln.data[col].loc[model_index] = operator( 
                                 out_soln.data[col].loc[model_index], af_data )
         logger.debug('Augmenting solution column:  {}'.format( col ) )
