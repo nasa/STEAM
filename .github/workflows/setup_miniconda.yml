@@ -1,0 +1,32 @@
+name: setup-minconda
+on:
+  push:
+    paths:
+
+jobs:
+  create-env:
+    name: Miniconda Setup - Linux
+    runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+
+      - name: create conda environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniconda-version: "v2.2"
+          activate-environment: pysteam310
+          environment-file: utils/py310.yml
+          python-version: 3.10
+          channels: conda-forge, defaults
+          auto-activate-base: false
+
+      - name: check solution
+        run: |
+          conda info
+          conda list
+          conda env export
+
