@@ -17,7 +17,7 @@ jobs:
       - name: create conda environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-#          miniconda-version: "v2.2"
+          miniconda-version: "latest"
           activate-environment: debug_env
           environment-file: utils/debug_env.yml
           python-version: 3.10
