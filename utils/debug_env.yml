@@ -13,7 +13,7 @@ dependencies:
 #  - wheel=0.38.4
 #  - xz=5.2.6
 #  - zlib=1.2.13
-#  - pip:
+  - pip:
 #    - numexpr==2.8.4
     - numpy==1.24.0
     - pandas==1.5.2
