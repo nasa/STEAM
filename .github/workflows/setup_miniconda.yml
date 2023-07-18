@@ -17,7 +17,7 @@ jobs:
       - name: create conda environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniconda-version: "v2.2"
+          miniconda-version: "2.2"
           activate-environment: pysteam310
           environment-file: utils/py310.yml
           python-version: 3.10
