@@ -19,7 +19,7 @@ jobs:
         with:
           miniconda-version: "latest"
 #          activate-environment: debug_env
-#          environment-file: utils/debug_env.yml
+          environment-file: utils/debug_env.yml
 #          python-version: 3.10
           channels: conda-forge, defaults
           auto-activate-base: false
