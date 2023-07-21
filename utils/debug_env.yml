@@ -5,7 +5,7 @@ channels:
 dependencies:
 #  - openssl=3.0.7
 #  - pip=22.3.1
-  - python=3.9
+  - python=3.10
 #  - readline=8.1.2
 #  - setuptools=65.5.1
 #  - sqlite=3.40.0
