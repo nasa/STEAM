@@ -27,6 +27,8 @@ jobs:
         run: |
           conda --version
           conda info
-          conda list
-          conda env export
 
+      - name: list packages
+        run: |
+          conda list
+          #conda env export
